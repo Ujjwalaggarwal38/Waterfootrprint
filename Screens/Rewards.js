@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Rewards = ({ navigation }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <View style={styles.topSection}>
@@ -15,7 +17,7 @@ const Rewards = ({ navigation }) => {
               source={require('../images/logo.png')}  // Replace with your logo image path
               style={styles.logo}
             />
-            <Text style={styles.topText}>Hello, Ujjwal!</Text>
+            <Text style={styles.topText}>{t('hello')}, Ujjwal!</Text>
           </View>
         </ImageBackground>
       </View>
@@ -24,28 +26,28 @@ const Rewards = ({ navigation }) => {
         <View style={styles.rewardContainer}>
           <Image source={require('../images/camera.png')} style={styles.rewardImage} /> {/* Replace with actual image */}
           <View style={styles.rewardTextContainer}>
-  <Text style={styles.rewardText}>Scan Products</Text>
-  <Text style={styles.rewardSubText}>Scan Products and find their Water Footprint to earn drops</Text>
+  <Text style={styles.rewardText}>{t('product')}</Text>
+  <Text style={styles.rewardSubText}>{t('scanwater')}</Text>
 </View>
 
         </View>
         <View style={styles.rewardContainer}>
           <Image source={require('../images/points.png')} style={styles.rewardImage} /> {/* Replace with actual image */}
           <View style={styles.rewardTextContainer}>
-  <Text style={styles.rewardText}>Collect Drops</Text>
-  <Text style={styles.rewardSubText}>Complete Daily challenges to earn drops</Text>
+  <Text style={styles.rewardText}>{t('collectdropps')}</Text>
+  <Text style={styles.rewardSubText}>{t('collect')}</Text>
 </View>
         </View>
         <View style={styles.rewardContainer}>
           <Image source={require('../images/points2.png')} style={styles.rewardImage} /> {/* Replace with actual image */}
           <View style={styles.rewardTextContainer}>
-  <Text style={styles.rewardText}>Redeem Drops</Text>
-  <Text style={styles.rewardSubText}>Exchange Drops for your selected Rewards</Text>
+  <Text style={styles.rewardText}>{t('redeem')}</Text>
+  <Text style={styles.rewardSubText}>{t('exchange')}</Text>
 </View>
 
         </View>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Reward2')}>
-              <Text style={styles.buttonText}>Explore</Text>
+              <Text style={styles.buttonText}>{t('explore')}</Text>
             </TouchableOpacity>
       </View>
 
@@ -53,11 +55,11 @@ const Rewards = ({ navigation }) => {
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Dash')}>
           <Image source={require('../images/home.png')} style={styles.iconImage} />
-          <Text style={styles.iconText}>Home</Text>
+          <Text style={styles.iconText}>{t('home')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconContainer}>
           <Image source={require('../images/community.png')} style={styles.iconImage} />
-          <Text style={styles.iconText}>Community</Text>
+          <Text style={styles.iconText}>{t('community')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.middleIconContainer}>
@@ -66,11 +68,11 @@ const Rewards = ({ navigation }) => {
 
         <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Reward')}>
           <Image source={require('../images/rewards.png')} style={styles.iconImage} />
-          <Text style={styles.iconText}>Rewards</Text>
+          <Text style={styles.iconText}>{t('rewards')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconContainer}>
+        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Profile')}>
           <Image source={require('../images/profile.png')} style={styles.iconImage} />
-          <Text style={styles.iconText}>Profile</Text>
+          <Text style={styles.iconText}>{t('profile')}</Text>
         </TouchableOpacity>
       </View>
     </View>

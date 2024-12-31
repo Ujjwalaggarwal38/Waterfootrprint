@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Pressable, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const challenges = [
   { id: '1', title: 'Challenge 1' },
@@ -11,6 +12,7 @@ const challenges = [
 ];
 
 export default function Rewards2({ navigation }) {
+  const { t } = useTranslation();
     const [activeTab, setActiveTab] = React.useState('Challenges');
     
     const handleTabPress = (tabName, screenName) => {
@@ -26,12 +28,12 @@ export default function Rewards2({ navigation }) {
           <Pressable onPress={() => navigation.navigate('Reward')} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>X</Text>
           </Pressable>
-          <Text style={styles.headerText}>My Dropps</Text>
+          <Text style={styles.headerText}>{t('myDropps')}</Text>
         </View>
 
         {/* Reward Information */}
         <View style={styles.rewardContainer}>
-          <Text style={styles.rewardText}>Your Available reward Dropps:</Text>
+          <Text style={styles.rewardText}>{t('yourAvailableRewardDropps')}</Text>
           <View style={styles.droppsBox}>
             <Text style={styles.droppsText}>150</Text>
           </View>
@@ -41,16 +43,16 @@ export default function Rewards2({ navigation }) {
       {/* Tab Section */}
       <View style={styles.tabContainer}>
         <TouchableOpacity onPress={() => handleTabPress('Challenges', 'Reward2')}>
-          <Text style={[styles.tab, activeTab === 'Challenges' && styles.activeTab]}>Challenges</Text>
+          <Text style={[styles.tab, activeTab === 'Challenges' && styles.activeTab]}>{t('challenges')}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleTabPress('Rewards', 'Reward3')}>
-          <Text style={[styles.tab, activeTab === 'Rewards' && styles.activeTab]}>Rewards</Text>
+          <Text style={[styles.tab, activeTab === 'Rewards' && styles.activeTab]}>{t('rewards')}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleTabPress('Redeem', 'Reward4')}>
-          <Text style={[styles.tab, activeTab === 'Redeem' && styles.activeTab]}>Redeem</Text>
+          <Text style={[styles.tab, activeTab === 'Redeem' && styles.activeTab]}>{t('redeem')}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleTabPress('History', 'Reward5')}>
-          <Text style={[styles.tab, activeTab === 'History' && styles.activeTab]}>History</Text>
+          <Text style={[styles.tab, activeTab === 'History' && styles.activeTab]}>{t('history')}</Text>
         </TouchableOpacity>
       </View>
 

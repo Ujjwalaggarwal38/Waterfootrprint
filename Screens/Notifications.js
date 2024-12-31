@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function Notifications() {
+  
+ 
+  const { t} = useTranslation();
   const [notifications, setNotifications] = useState([]); 
   return (
     <View style={styles.container}>
@@ -11,7 +15,7 @@ export default function Notifications() {
             source={require('../images/notificationback.png')}
             style={styles.emptyImage}
           />
-          <Text style={styles.emptyText}>You don't have any notifications</Text>
+          <Text style={styles.emptyText}>{t('notify')}</Text>
         </View>
       ) : (
         <FlatList

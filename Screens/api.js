@@ -1,17 +1,24 @@
-const API_BASE_URL = 'http://192.168.32.76:8000'; // Use ngrok URL if remote
+// api.js
+const API_BASE_URL = 'http://172.17.18.235:3000'; // Update with your Node.js server URL
 
-export const fetchProductByName = async (name) => {
+// Function to handle the chat request
+export const sendMessageToChatbot = async (message, language) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/data/name?name=${name}`);
-    const data = await response.json();
+    const response = await fetch(`${API_BASE_URL}/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message, language }),
+    });
 
-    if (data && data.length > 0) {
-      const crop = data.find((item) => item["Crop Name"].toLowerCase() === name.toLowerCase());
-      return crop;
-    } else {
-      throw new Error(`Product with name ${name} not found.`);
+    if (!response.ok) {
+      throw new Error('Error from server: ' + response.statusText);
     }
+
+    const data = await response.json();
+    return data.response; // Return the response from the backend
   } catch (error) {
-    console.error(`Error fetching product ${name}:`, error);
+    throw new Error(error.message || 'Failed to send message');
   }
 };

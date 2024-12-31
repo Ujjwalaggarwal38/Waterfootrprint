@@ -8,13 +8,39 @@ import {
   ImageBackground,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
+import { registerUser } from './apiutility';
+import { useTranslation } from 'react-i18next';
+
+
 
 export default function SignUpScreen({ navigation }) {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  const handleRegister = async () => {
+    setLoading(true);
+    console.log('Registering user...');
+    try {
+      console.log('Payload:', { name, email, password });
+      const response = await registerUser(name, email, password);
+      console.log('Registration success:', response);
+      // Alert.alert('Success', response.message);
+      navigation.navigate('Otp', { email });
+    } catch (error) {
+      console.error('Registration error:', error.message);
+      Alert.alert('Error', error.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+      console.log('Registration process finished');
+    }
+  };
+  
+  
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
@@ -26,24 +52,23 @@ export default function SignUpScreen({ navigation }) {
           />
         </View>
         <View style={styles.bottomSection}>
-        <Text style={styles.heading}>Sign Up</Text>
+          <Text style={styles.heading}>{t('signUp')}</Text>
           <View style={styles.overlay}>
-            
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Name</Text>
+              <Text style={styles.label}>{t('name')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your name"
+                placeholder={t('enterYourName')}
                 value={name}
                 onChangeText={setName}
               />
             </View>
-            
+
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('email')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
+                placeholder={t('enterYourEmail')} 
                 keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
@@ -51,24 +76,30 @@ export default function SignUpScreen({ navigation }) {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
+              <Text style={styles.label}>{t('password')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your password"
+                placeholder={t('enterYourPassword')}
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
               />
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Dash')}>
-              <Text style={styles.buttonText}>Create Account</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleRegister}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? t('creatingAccount') : t('createAccount')} 
+              </Text>
             </TouchableOpacity>
 
             <View style={styles.signInContainer}>
-              <Text style={styles.signInText}>Already Have An Account? </Text>
+              <Text style={styles.signInText}>{t('alreadyHaveAnAccount')}</Text>
               <TouchableOpacity onPress={() => navigation.navigate('Signin')}>
-                <Text style={styles.signInLink}>Sign In.</Text>
+                <Text style={styles.signInLink}>{t('signInLink')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -81,10 +112,10 @@ export default function SignUpScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'#313a41'
+    backgroundColor: '#313a41',
   },
   topSection: {
-    flex: 3, 
+    flex: 3,
   },
   backgroundImage: {
     flex: 1,
@@ -98,15 +129,15 @@ const styles = StyleSheet.create({
     padding: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    overflow:'hidden'
+    overflow: 'hidden',
   },
-  heading:{
-    fontSize:34,
-    fontWeight:'bold',
-    marginBottom:40
+  heading: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    marginBottom: 40,
   },
   overlay: {
-    marginBottom:60,
+    marginBottom: 60,
     width: '100%',
     alignItems: 'center',
   },

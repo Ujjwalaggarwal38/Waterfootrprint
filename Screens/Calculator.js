@@ -1,159 +1,3 @@
-// import React, { useState } from 'react';
-// import {
-//   View,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   StyleSheet,
-//   Keyboard,
-//   TouchableWithoutFeedback,
-//   Alert,
-// } from 'react-native';
-// import { fetchProductByName } from './api'; // Import the function
-
-// const Calculator = () => {
-//   const [productName, setProductName] = useState('');
-//   const [quantity, setQuantity] = useState('');
-//   const [result, setResult] = useState({
-//     blue: '',
-//     green: '',
-//     grey: '',
-//     waterFootprint: '',
-//   });
-
-//   const handleCalculate = async () => {
-//     if (!productName || !quantity) {
-//       Alert.alert("Error", "Please fill in both the product name and quantity.");
-//       return;
-//     }
-
-//     try {
-//       const data = await fetchProductByName(productName); // Fetch product data by name
-
-//       if (data) {
-//         // Calculate the results based on quantity and the fetched product data
-//         setResult({
-//           blue: data.blue* quantity,
-//           green: data.green * quantity,
-//           grey: data.grey * quantity,
-//           Total: (data.blue+data.green+data.grey) * quantity,
-//         });
-//       } 
-//     } catch (error) {
-//       console.error(error);
-//       Alert.alert("Error", "Failed to fetch data from the server.");
-//     }
-//   };
-
-//   return (
-//     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-//       <View style={styles.container}>
-//         <View style={styles.inputContainer}>
-//           <Text style={styles.label}>Enter Name of product:</Text>
-//           <TextInput
-//             style={styles.input}
-//             placeholder="Product Name"
-//             value={productName}
-//             onChangeText={setProductName}
-//           />
-
-//           <Text style={styles.label}>Add Quantity:</Text>
-//           <View style={styles.quantityContainer}>
-//             <TextInput
-//               style={[styles.input, styles.quantityInput]}
-//               placeholder="0"
-//               keyboardType="numeric"
-//               value={quantity}
-//               onChangeText={setQuantity}
-//             />
-//             <Text style={styles.unit}>Kg</Text>
-//           </View>
-
-//           <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
-//             <Text style={styles.calculateButtonText}>Calculate</Text>
-//           </TouchableOpacity>
-//         </View>
-
-//         <View style={styles.resultContainer}>
-//           <Text style={styles.resultTitle}>Result:</Text>
-//           <Text style={styles.resultText}>Blue: {result.blue}</Text>
-//           <Text style={styles.resultText}>Green: {result.green}</Text>
-//           <Text style={styles.resultText}>Grey: {result.grey}</Text>
-//           <Text style={styles.resultText}>Total: {result.Total}</Text>
-//         </View>
-//       </View>
-//     </TouchableWithoutFeedback>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#1a2238',
-//     padding: 20,
-//   },
-//   inputContainer: {
-//     marginTop: 40,
-//     backgroundColor: '#3e4959',
-//     borderRadius: 10,
-//     padding: 15,
-//   },
-//   label: {
-//     color: 'white',
-//     fontSize: 20,
-//     marginBottom: 10,
-//   },
-//   input: {
-//     backgroundColor: 'white',
-//     borderRadius: 5,
-//     padding: 10,
-//     marginBottom: 15,
-//     color: 'black',
-//   },
-//   quantityContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   quantityInput: {
-//     flex: 1,
-//     marginRight: 10,
-//     borderColor: 'purple',
-//     borderWidth: 2,
-//   },
-//   unit: {
-//     color: 'white',
-//     fontSize: 20,
-//   },
-//   calculateButton: {
-//     backgroundColor: '#01A0DC',
-//     borderRadius: 5,
-//     padding: 10,
-//     alignItems: 'center',
-//     marginTop: 10,
-//   },
-//   calculateButtonText: {
-//     fontSize: 20,
-//     color: '#000',
-//   },
-//   resultContainer: {
-//     backgroundColor: '#3e4959',
-//     borderRadius: 10,
-//     padding: 15,
-//     marginTop: 20,
-//   },
-//   resultTitle: {
-//     color: 'white',
-//     fontSize: 18,
-//     marginBottom: 10,
-//   },
-//   resultText: {
-//     color: 'white',
-//     fontSize: 16,
-//     marginVertical: 2,
-//   },
-// });
-
-// export default Calculator;
 import React, { useState } from 'react';
 import {
   View,
@@ -165,9 +9,11 @@ import {
   TouchableWithoutFeedback,
   Alert,
 } from 'react-native';
-import { fetchProductByName } from './api';
+import { useTranslation } from 'react-i18next';
+import { searchCropByName } from './apiutility';
 
 const Calculator = () => {
+  const { t } = useTranslation();
   const [productName, setProductName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [result, setResult] = useState({
@@ -175,80 +21,105 @@ const Calculator = () => {
     green: '',
     grey: '',
     totalWaterFootprint: '',
-    location:'',
-    scarcity:''
+    location: '',
+    scarcity: '',
   });
-  
+
   const handleCalculate = async () => {
+    // Validate product name and quantity
     if (!productName || !quantity) {
-      Alert.alert("Error", "Please fill in both the product name and quantity.");
+      Alert.alert(t('errorInvalidInput'));
       return;
     }
-
+  
+    if (isNaN(quantity) || parseFloat(quantity) <= 0) {
+      Alert.alert(t('errorInvalidQuantity'));
+      return;
+    }
+  
     try {
-      const data = await fetchProductByName(productName);
-
-      if (data) {
-        const quantityInTons = parseFloat(quantity);
-
-        setResult({
-          blue: (data["Blue WF (m³/ton)"] * quantityInTons).toFixed(2),
-          green: (data["Green WF (m³/ton)"] * quantityInTons).toFixed(2),
-          grey: (data["Grey WF (m³/ton)"] * quantityInTons).toFixed(2),
-          totalWaterFootprint: (data["Total WF (m³/ton)"] * quantityInTons).toFixed(2),
-          location:(data["Major Growing Locations"]),
-          scarcity:(data["Water Scarcity Status"])
-        });
-      } else {
-        Alert.alert("Error", "Product not found.");
+      // Fetch data based on product name
+      const data = await searchCropByName(productName);
+  
+      // Ensure data is valid
+      if (!data) {
+        Alert.alert(t('errorNoDataFound'));
+        return;
       }
+  
+      // Check if product data is available
+      console.log("API Data:", data);
+  
+      // Ensure data fields are numbers
+      const quantityInTons = parseFloat(quantity) / 1000; // Convert kg to tons
+      const blueWF = parseFloat(data["Blue WF (m³/ton)"]);
+      const greenWF = parseFloat(data["Green WF (m³/ton)"]);
+      const greyWF = parseFloat(data["Grey WF (m³/ton)"]);
+      const totalWF = parseFloat(data["Total WF (m³/ton)"]);
+  
+      // Handle invalid data (NaN values)
+      if (isNaN(blueWF) || isNaN(greenWF) || isNaN(greyWF) || isNaN(totalWF)) {
+        Alert.alert(t('errorInvalidData'));
+        return;
+      }
+  
+      // Update result with calculated values
+      setResult({
+        blue: (blueWF * quantityInTons).toFixed(2),
+        green: (greenWF * quantityInTons).toFixed(2),
+        grey: (greyWF * quantityInTons).toFixed(2),
+        totalWaterFootprint: (totalWF * quantityInTons).toFixed(2),
+        location: data["Major Growing Locations"] || 'Location not available',
+        scarcity: data["Water Scarcity Status"] || 'Scarcity status not available',
+      });
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Failed to fetch data from the server.");
+      console.error("Error fetching data:", error);
+      Alert.alert(t('errorFetchingData'));
     }
   };
+  
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Enter Name of product:</Text>
+          <Text style={styles.label}>{t('enterProductName')}</Text>
           <TextInput
             style={styles.input}
-            placeholder="Product Name"
+            placeholder={t('enterProductName')}
             value={productName}
             onChangeText={setProductName}
           />
 
-          <Text style={styles.label}>Add Quantity (in Kg):</Text>
+          <Text style={styles.label}>{t('addQuantity')}</Text>
           <View style={styles.quantityContainer}>
             <TextInput
               style={[styles.input, styles.quantityInput]}
-              placeholder="0"
+              placeholder={t('quantityPlaceholder')}
               keyboardType="numeric"
               value={quantity}
               onChangeText={setQuantity}
             />
-            <Text style={styles.unit}>Kg</Text>
+            <Text style={styles.unit}>{t('kg')}</Text>
           </View>
 
           <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
-            <Text style={styles.calculateButtonText}>Calculate</Text>
+            <Text style={styles.calculateButtonText}>{t('calculate')}</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.calculateButton} onPress={handleCalculate}>
-            <Text style={styles.calculateButtonText}>Add Product</Text>
+            <Text style={styles.calculateButtonText}>{t('addProduct')}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.resultContainer}>
-          <Text style={styles.resultTitle}>Result:</Text>
-          <Text style={styles.resultText}>Blue Water Footprint: {result.blue} m³</Text>
-          <Text style={styles.resultText}>Green Water Footprint: {result.green} m³</Text>
-          <Text style={styles.resultText}>Grey Water Foorprint: {result.grey} m³</Text>
-          <Text style={styles.resultText}>Total Water Footprint: {result.totalWaterFootprint} m³</Text>
-          <Text style={styles.resultText}>Major Growing Regions: {result.location}</Text>
-          <Text style={styles.resultText}>Scarcity Status: {result.scarcity} </Text>
+          <Text style={styles.resultTitle}>{t('resultTitle')}</Text>
+          <Text style={styles.resultText}>{`${t('blueWaterFootprint')}: ${result.blue || 'N/A'} m³`}</Text>
+          <Text style={styles.resultText}>{`${t('greenWaterFootprint')}: ${result.green || 'N/A'} m³`}</Text>
+          <Text style={styles.resultText}>{`${t('greyWaterFootprint')}: ${result.grey || 'N/A'} m³`}</Text>
+          <Text style={styles.resultText}>{`${t('totalWaterFootprint')}: ${result.totalWaterFootprint || 'N/A'} m³`}</Text>
+          <Text style={styles.resultText}>{`${t('majorGrowingRegions')}: ${result.location || 'N/A'}`}</Text>
+          <Text style={styles.resultText}>{`${t('scarcityStatus')}: ${result.scarcity || 'N/A'}`}</Text>
         </View>
       </View>
     </TouchableWithoutFeedback>

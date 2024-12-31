@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Pressable, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const challenges = [
   { id: '1', title: 'Reward 1' },
@@ -11,6 +12,7 @@ const challenges = [
 ];
 
 export default function Rewards3({ navigation }) {
+  const { t } = useTranslation();
     
   return (
     <View style={styles.container}>
@@ -20,12 +22,12 @@ export default function Rewards3({ navigation }) {
           <Pressable onPress={() => navigation.navigate('Reward')} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>X</Text>
           </Pressable>
-          <Text style={styles.headerText}>My Dropps</Text>
+          <Text style={styles.headerText}>{t('myDropps')}</Text>
         </View>
 
         {/* Reward Information */}
         <View style={styles.rewardContainer}>
-          <Text style={styles.rewardText}>Your Available reward Dropps:</Text>
+          <Text style={styles.rewardText}>{t('yourAvailableRewardDropps')}</Text>
           <View style={styles.droppsBox}>
             <Text style={styles.droppsText}>150</Text>
           </View>
@@ -35,16 +37,16 @@ export default function Rewards3({ navigation }) {
       {/* Tab Section */}
       <View style={styles.tabContainer}>
       <TouchableOpacity onPress={()=>navigation.navigate('Reward2')}>
-        <Text style={styles.tab}>Challenges</Text>
+        <Text style={styles.tab}>{t('challenges')}</Text>
       </TouchableOpacity>
       <TouchableOpacity  onPress={()=>navigation.navigate('Reward3')}>
-        <Text style={[styles.tab, styles.activeTab]}>Rewards</Text>
+        <Text style={[styles.tab, styles.activeTab]}>{t('rewards')}</Text>
       </TouchableOpacity>
       <TouchableOpacity  onPress={()=>navigation.navigate('Reward4')}>
-        <Text style={styles.tab}>Redeem</Text>
+        <Text style={styles.tab}>{t('redeem')}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={()=>navigation.navigate('Reward5')}>
-        <Text style={styles.tab}>History</Text>
+        <Text style={styles.tab}>{t('history')}</Text>
       </TouchableOpacity>
       </View>
 

@@ -8,11 +8,47 @@ import {
   ImageBackground,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
+import { login } from './mainapi';
+import { loginUser } from './apiutility';
+import { useTranslation } from 'react-i18next';
 
-const Signin = ({navigation}) => {
+const Signin = ({ navigation }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert(t('validationError'), t('emptyFieldsError'));
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // API call to authenticate the user with backend
+      const response = await loginUser(email, password);
+
+      // On success, store the token and show success message
+      Alert.alert(t('login'), t('loginSuccess'));
+
+      // Store token to AsyncStorage for future use (e.g., to persist user session)
+      // await AsyncStorage.setItem('token', response.token);
+
+      // Navigate to the Dashboard screen (reset navigation to prevent back navigation)
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Dash' }],
+      });
+    } catch (error) {
+      Alert.alert(t('login'), error.message || `${t('login')} ${t('failed')}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -25,13 +61,13 @@ const Signin = ({navigation}) => {
           />
         </View>
         <View style={styles.bottomSection}>
-        <Text style={styles.heading}>Sign In</Text>
+          <Text style={styles.heading}>{t('signInText')}</Text>
           <View style={styles.overlay}>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('email')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your email"
+                placeholder={t('enterYourEmail')}
                 keyboardType="email-address"
                 value={email}
                 onChangeText={setEmail}
@@ -39,25 +75,36 @@ const Signin = ({navigation}) => {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
+              <Text style={styles.label}>{t('password')}</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your password"
+                placeholder={t('enterYourPassword')}
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
               />
-              <Text style={styles.forgot}>Forgot Password?</Text>
+               <TouchableOpacity onPress={() => navigation.navigate('Forgot')}>
+              <Text style={styles.forgot}>{t('forgotPassword')}</Text>
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {loading ?`${t('login')}...` : t('login')}
+              </Text>
             </TouchableOpacity>
 
             <View style={styles.signInContainer}>
-              <Text style={styles.signInText}>New to Aqua Metrics </Text>
+              <Text style={styles.signInText}>{t('newToAquaMetrics')}</Text>
               <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-                <Text style={styles.signInLink}>Sign Up.</Text>
+                <Text style={styles.signInLink}>{t('signUp')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Dash')}>
+                <Text style={styles.signInLink}>{t('guestLogin')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -65,15 +112,15 @@ const Signin = ({navigation}) => {
       </View>
     </TouchableWithoutFeedback>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'#40bcd0'
+    backgroundColor: '#40bcd0',
   },
   topSection: {
-    flex: 3, 
+    flex: 3,
   },
   backgroundImage: {
     flex: 1,
@@ -87,15 +134,15 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    overflow:'hidden'
+    overflow: 'hidden',
   },
-  heading:{
-    fontSize:34,
-    fontWeight:'bold',
-    marginBottom:70
+  heading: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    marginBottom: 70,
   },
   overlay: {
-    marginBottom:70,
+    marginBottom: 70,
     width: '100%',
     alignItems: 'center',
   },
@@ -141,9 +188,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  forgot:{
-    textAlign:'right'
-  }
+  forgot: {
+    textAlign: 'right',
+  },
 });
 
-export default Signin
+export default Signin;

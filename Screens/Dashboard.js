@@ -1,9 +1,52 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert} from 'react-native';
+import { getProfile } from './mainapi';
+import { useTranslation } from 'react-i18next';
+// import { Camera,useCameraDevices } from 'react-native-vision-camera';
 
 export default function Dashboard({ navigation }) {
+  const { t } = useTranslation();
+  const [currentTipImage, setCurrentTipImage] = useState(0);
+  const [username, setUsername] = useState('');
+
+  const tipImages = [
+    require('../images/Tip1.png'),
+    require('../images/Tip2.png'),
+    require('../images/Tip3.png'),
+    require('../images/Tip4.png'),
+    require('../images/Tip5.png'),
+    require('../images/Tip6.png'),
+    require('../images/Tip7.png'),
+    require('../images/Tip8.png'),
+    // Add more images as needed
+  ];
+
+  useEffect(() => {
+    const imageInterval = setInterval(() => {
+      setCurrentTipImage((prevImage) => (prevImage + 1) % tipImages.length);
+    }, 3000); // Change image every 5 seconds
+
+    // Clear interval on component unmount
+    return () => clearInterval(imageInterval);
+  }, []);
+
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        // Replace 'your-token' with the actual token management logic
+        const token = 'your-token'; // Fetch from secure storage or context
+        const profileData = await getProfile(token);
+        setUsername(profileData.name); // Assuming the profile API returns a `name` field
+      } catch (error) {
+        // console.error('Error fetching profile:', error.message);
+      }
+    };
+
+    fetchUsername();
+  }, []);
   const openChatbot = () => {
-    Alert.alert("Camera", "Camera feature coming soon!");
+    Alert.alert(t('cameraFeatureComingSoon'));
   };
 
   return (
@@ -14,7 +57,7 @@ export default function Dashboard({ navigation }) {
           source={require('../images/logo.png')}
           style={styles.logo}
         />
-        <Text style={styles.headerText}>Hello, Ujjwal!</Text>
+        <Text style={styles.headerText}>{t('hello')}, {username || t('guest')}!</Text>
           </View>
           <TouchableOpacity onPress={() => navigation.navigate('Notify')}>
           <Image
@@ -24,34 +67,34 @@ export default function Dashboard({ navigation }) {
           </TouchableOpacity>
         
       </View>
-
-      {/* Goal & Consumption Section */}
-      <View style={styles.goalContainer}>
+<TouchableOpacity>
+<View style={styles.goalContainer}>
         <View style={styles.profilePic}>
         <Image
           source={require('../images/profile_logo.png')}
           style={styles.logo2}
         />
- 
         </View>
         <View>
-          <Text style={styles.goalText}>Today's Goal Limit</Text>
-          <Text style={styles.goalValue}>500 Liters</Text>
-          <Text style={styles.consumedText}>Consumed</Text>
-          <Text style={styles.consumedValue}>269 Liters</Text>
+          <Text style={styles.goalText}>{t('todaysGoalLimit')}</Text>
+          <Text style={styles.goalValue}>500 {t('liters')}</Text>
+          <Text style={styles.consumedText}>{t('consumed')}</Text>
+          <Text style={styles.consumedValue}>269 {t('liters')}</Text>
         </View>
       </View>
+</TouchableOpacity>
+      
 
       {/* Menu Options */}
       <View style={styles.menuContainer}>
   <View style={styles.menuButton}>
-    <TouchableOpacity onPress={() => console.log("Leader Board clicked")} style={styles.iconContainer4}>
+    <TouchableOpacity onPress={() => navigation.navigate('Leader')} style={styles.iconContainer4}>
       <Image
         source={require('../images/leaderboard_1.png')}
         style={styles.logo9}
       />
     </TouchableOpacity>
-    <Text style={styles.menuText}>Leaderboard</Text>
+    <Text style={styles.menuText}>{t('leaderboard')}</Text>
   </View>
   
   <View style={styles.menuButton}>
@@ -61,26 +104,26 @@ export default function Dashboard({ navigation }) {
         style={styles.logo9}
       />
     </TouchableOpacity >
-    <Text style={styles.menuText} >Calculate</Text>
+    <Text style={styles.menuText} >{t('calculate')}</Text>
   </View>
   
   <View style={styles.menuButton}>
-    <TouchableOpacity onPress={() => console.log("Educational Content clicked")} style={styles.iconContainer4}>
+    <TouchableOpacity onPress={() => navigation.navigate('Education')} style={styles.iconContainer4}>
       <Image
         source={require('../images/calculator_1.png')}
         style={styles.logo9}
       />
     </TouchableOpacity>
-    <Text style={styles.menuText}>Educational Content</Text>
+    <Text style={styles.menuText}>{t('educationalContent')}</Text>
   </View>
 </View>
 
 
 
 
-      {/* Tips Section */}
-      <View style={styles.tipsContainer}>
-        <Text style={styles.tipsText}>Tips</Text>
+       {/* Tips Section with rotating images */}
+       <View style={styles.tipsContainer}>
+        <Image source={tipImages[currentTipImage]} style={styles.tipsImage} />
       </View>
 
       {/* {ChatBot Section} */}
@@ -97,24 +140,24 @@ export default function Dashboard({ navigation }) {
       <View style={styles.footerContainer}>
         <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Dash')}>
           <Image source={require('../images/home.png')} style={styles.iconImage} />
-          <Text style={[styles.iconText, styles.middleIconText]}>Home</Text>
+          <Text style={[styles.iconText, styles.middleIconText]}>{t('home')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconContainer}>
-          <Image source={require('../images/community.png')} style={styles.iconImage} />
-          <Text style={[styles.iconText, styles.middleIconText]}>Community</Text>
+        <TouchableOpacity style={styles.iconContainer}  onPress={() => navigation.navigate('Commute')}>
+          <Image source={require('../images/community.png')} style={styles.iconImage}/>
+          <Text style={[styles.iconText, styles.middleIconText]}>{t('community')}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.middleIconContainer} onPress={openChatbot}>
-          <Image source={require('../images/camera.png')} style={[styles.iconImage, styles.middleIconImage]} />
+        <TouchableOpacity style={styles.middleIconContainer} onPress={() => navigation.navigate('Cameras')}>
+          <Image source={require('../images/scanner.png')} style={[styles.iconImage, styles.middleIconImage]} />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Reward')}>
           <Image source={require('../images/rewards.png')} style={styles.iconImage} />
-          <Text style={[styles.iconText, styles.middleIconText]}>Rewards</Text>
+          <Text style={[styles.iconText, styles.middleIconText]}>{t('rewards')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconContainer}>
+        <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('Profile')}>
           <Image source={require('../images/profile.png')} style={styles.iconImage} />
-          <Text style={[styles.iconText, styles.middleIconText]}>Profile</Text>
+          <Text style={[styles.iconText, styles.middleIconText]}>{t('profile')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -218,21 +261,17 @@ const styles = StyleSheet.create({
     borderRadius:50,
   },
   tipsContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#0E1D36',
     height: 100,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
     marginTop:100
   },
-  tipsText: {
-    fontSize: 28,
-    color: 'black',
-  },
   rightAlignedContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop:100
+    marginTop:50
   },
   footerContainer: {
     flexDirection: 'row',
@@ -270,8 +309,25 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   middleIconImage: {
-    width: 70,
-    height: 70,
+    width: 40,
+    height: 40,
+  },
+  cameraContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    bottom: 50,
+    backgroundColor: 'red',
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

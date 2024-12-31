@@ -2,13 +2,33 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image,TouchableWithoutFeedback,Keyboard } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import LinearGradient from 'react-native-linear-gradient';
+import { useTranslation } from 'react-i18next';
+import { editProfile } from './apiutility';
 
 const Editprofile = ({navigation}) => {
+  const { t } = useTranslation(); 
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
   const [mobile, setMobile] = useState('');
   const [address, setAddress] = useState('');
+
+   // Function to handle saving the profile data
+   const handleSave = async () => {
+    try {
+      // Call the editProfile function with current data
+      const result = await editProfile(name, dob, gender, mobile, address);
+      
+      // Show success message on successful profile update
+      if (result) {
+        Alert.alert(t('profileUpdated'), t('profileUpdatedSuccessMessage'));  // Show success message
+        navigation.goBack(); // Go back to the previous screen (Profile screen)
+      }
+    } catch (error) {
+      // Show error message if something goes wrong
+      Alert.alert(t('error'), t('profileUpdateError'));
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -26,34 +46,33 @@ const Editprofile = ({navigation}) => {
     resizeMode='contain'
   />
 </View>
-<TouchableOpacity style={styles.profileImageContainer3}>
+{/* <TouchableOpacity style={styles.profileImageContainer3}>
   <Image
     source={require('../images/penedit.png')}
     style={styles.penedit}
   />
-  <Text style={styles.edit}>Edit Image</Text>
-</TouchableOpacity>
+</TouchableOpacity> */}
 
 
       {/* Form Fields */}
       <View style={styles.formContainer}>
-        <Text style={styles.label}>Name</Text>
+        <Text style={styles.label}>{t('name')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="Your Name"
+          placeholder={t('enterYourName')}
           value={name}
           onChangeText={setName}
         />
 
-        <Text style={styles.label}>Date Of Birth</Text>
+        <Text style={styles.label}>{t('dateOfBirth')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="DD-MM-YYYY"
+          placeholder={t('dobPlaceholder')}
           value={dob}
           onChangeText={setDob}
         />
 
-        <Text style={styles.label}>Gender</Text>
+        <Text style={styles.label}>{t('gender')}</Text>
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={gender}
@@ -67,12 +86,12 @@ const Editprofile = ({navigation}) => {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Mobile No.</Text>
+        <Text style={styles.label}>{t('mobileNumber')}</Text>
         <View style={styles.alignmobile}>
   <Text style={styles.countryCode}>+91</Text>
   <TextInput
     style={styles.mobileInput}
-    placeholder="Enter mobile number"
+    placeholder={t('enterMobileNumber')}
     keyboardType="numeric"
     value={mobile}
     onChangeText={setMobile}
@@ -81,18 +100,18 @@ const Editprofile = ({navigation}) => {
 
         
 
-        <Text style={styles.label}>Address</Text>
+        <Text style={styles.label}>{t('address')}</Text>
         <TextInput
           style={styles.input}
-          placeholder="House No., Floor, Block, Locality, City, State..."
+          placeholder={t('addressPlaceholder')}
           value={address}
           onChangeText={setAddress}
         />
       </View>
 
       {/* Save Button */}
-      <TouchableOpacity style={styles.saveButton}>
-        <Text style={styles.saveButtonText}>Save Changes</Text>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>{t('saveChanges')}</Text>
       </TouchableOpacity>
     </LinearGradient>
      </TouchableWithoutFeedback>
